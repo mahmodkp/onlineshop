@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'djoser',
     # Apps
     'accounts',
+    'products',
 
 
 
@@ -86,7 +87,7 @@ DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.postgresql',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'onlineshopdb',
+        'NAME': 'onlineshop',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',
