@@ -2,4 +2,5 @@
 .venv
 db.*
 local_settings.py
+links.txt
 
