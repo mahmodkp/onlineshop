@@ -41,12 +41,12 @@ urlpatterns = [
     # re_path(r'^', schema_view),
     path('', schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),
-
     re_path(r'^auth/', include('djoser.urls')),
     # re_path(r'^auth/', include('djoser.urls.authtoken')),
     re_path(r'^auth/', include('djoser.urls.jwt')),
     re_path(r'^auth/', include('djoser.social.urls')),
-    #path("market/", include(market.urls)),
+    
+    path("api/v1/product/", include('products.urls')),
     #path("api/", include("core.api_urls")),
 
 
