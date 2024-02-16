@@ -8,19 +8,19 @@ def get_default_product_category():
 
 
 def category_image_path(instance, filename):
-    return f"products/category/images/{instance.name}/{filename}"
+    return f"products/media/category/images/{instance.product.id}/{filename}"
 
 
 def product_image_path(instance, filename):
-    return f"products/images/{instance.name}/{filename}"
+    return f"products/media/product/images/{instance.product.id}/{filename}"
 
 
 def gallery_image_path(instance, filename):
-    return f"products/gallery/images/{instance.name}/{filename}"
+    return f"products/media/gallery/images/{instance.product.id}/{filename}"
 
 
 def gallery_vodeo_path(instance, filename):
-    return f"products/gallery/videos/{instance.name}/{filename}"
+    return f"products/media/gallery/videos/{instance.product.id}/{filename}"
 
 
 class Category(models.Model):
@@ -29,7 +29,8 @@ class Category(models.Model):
     image = models.ImageField(
         upload_to=category_image_path, blank=True, null=True)
     is_active = models.BooleanField(default=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
 
@@ -46,13 +47,12 @@ class Product(models.Model):
     quantity = models.IntegerField(default=1)
     description = models.TextField(blank = True,null=True)
     image = models.ImageField(upload_to=product_image_path, blank=True,null=True)
-    quantity = models.IntegerField(default=1)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        ordering = ("-created_at",)
+    # class Meta:
+    #     ordering = ("-created_at",)
 
     def __str__(self):
         return self.name
@@ -60,16 +60,18 @@ class Product(models.Model):
 
 class ImageGallery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='gallery_image_path', null=True)
+    image = models.ImageField(upload_to=gallery_image_path, null=True)
     is_active = models.BooleanField(default=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class VideoGallery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    video = models.FileField(upload_to="gallery_vodeo_path",
+    video = models.FileField(upload_to=gallery_vodeo_path,
                              null=True)
     is_active = models.BooleanField(default=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Comment(models.Model):
     product = models.ForeignKey(

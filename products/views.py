@@ -1,3 +1,132 @@
 from django.shortcuts import render
 
 # Create your views here.
+from rest_framework import permissions, viewsets
+from rest_framework.response import Response
+from products.models import (
+    Product,
+    Category,
+    ImageGallery,
+    VideoGallery,
+    Comment,
+)
+
+from .serializers import (
+    ProductCategorySerializer,
+    ProductReadSerializer,
+    ProductWriteSerializer,
+    CommentSerializer,
+    ImageGallerySerializer,
+    VideoGallerySerializer,
+)
+from rest_framework.decorators import action
+from rest_framework import status
+
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List and Retrieve product categories
+    """
+
+    queryset = Category.objects.all()
+    serializer_class = ProductCategorySerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for products
+    """
+
+    queryset = Product.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return ProductWriteSerializer
+
+        return ProductReadSerializer
+
+    def get_permissions(self):
+
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            self.permission_classes = (permissions.IsAdminUser,)
+        else:
+            self.permission_classes = (permissions.AllowAny,)
+
+        return super().get_permissions()
+
+    def retrieve(self, request, *args, **kwargs):
+        print('asdas')
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get', 'post'])
+    def comments(self, request, pk=None):
+        if self.request.method == 'GET':
+            product = self.get_object()
+            comments = Comment.objects.filter(product=product)
+            serializer = CommentSerializer(comments, many=True)
+            return Response(serializer.data)
+        elif self.request.method == 'POST':
+            serializer = CommentSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                text = serializer.validated_data.get("text")
+                product = self.get_object()
+                user = self.request.user
+                comments = Comment.objects.create(
+                    user=user, product=product, text=text)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for Comment
+    """
+    queryset = Comment.objects.all()  # .filter(is_confirmed=True).order_by('-created_at')
+    serializer_class = CommentSerializer
+
+    def get_permissions(self):
+        if self.action in ("update", "partial_update", "destroy"):
+            self.permission_classes = (permissions.IsAdminUser,)
+        elif self.action in ("create"):
+            self.permission_classes = (permissions.IsAuthenticated,)
+        else:
+            self.permission_classes = (permissions.AllowAny,)
+
+        return super().get_permissions()
+
+
+class ImagegalleryViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for imagegallery
+    """
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            self.permission_classes = (permissions.IsAdminUser,)
+        else:
+            self.permission_classes = (permissions.AllowAny,)
+
+        return super().get_permissions()
+
+    queryset = ImageGallery.objects.all()
+    serializer_class = ImageGallerySerializer
+
+
+class VideogalleryViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for videogallery
+    """
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            self.permission_classes = (permissions.IsAdminUser,)
+        else:
+            self.permission_classes = (permissions.AllowAny,)
+
+        return super().get_permissions()
+    queryset = VideoGallery.objects.all()
+    serializer_class = VideoGallerySerializer
