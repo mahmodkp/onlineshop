@@ -1,7 +1,9 @@
 from django.db import models
 from accounts.models import CustomUser
 # Create your models here.
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 def get_default_article_category():
     return Category.objects.get_or_create(name="unknown")[0]
@@ -29,7 +31,8 @@ class Category(models.Model):
     image = models.ImageField(
         upload_to=category_image_path, blank=True, null=True)
     is_active = models.BooleanField(default=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
 
@@ -60,18 +63,20 @@ class ImageGallery(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='gallery_image_path', null=True)
     is_active = models.BooleanField(default=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class VideoGallery(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     video = models.FileField(upload_to="gallery_vodeo_path",
                              null=True)
     is_active = models.BooleanField(default=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,related_name='article_comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='article_comments')
     text = models.TextField()
     is_active = models.BooleanField(default=True)
     is_confirmed = models.BooleanField(default=False)

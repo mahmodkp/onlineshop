@@ -12,7 +12,7 @@ User = get_user_model()
 
 class Card(models.Model):
     buyer = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="customers"
+        User , on_delete=models.CASCADE, related_name="customers"
     )
     checkout_id = models.CharField(
         max_length=255, blank=True, null=True, verbose_name="Checkout ID"
@@ -63,7 +63,7 @@ class CardItem(models.Model):
 
 class Invoice(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
         related_name="invoices",
         null=True,
