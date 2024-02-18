@@ -12,9 +12,10 @@ from products.models import (
 )
 
 from .serializers import (
+    CommentWriteSerializer,
     ProductCategorySerializer,
-    ProductReadSerializer,
-    ProductWriteSerializer,
+    ProductSerializer,
+    ProductRetrieveSerializer,
     CommentSerializer,
     ImageGallerySerializer,
     VideoGallerySerializer,
@@ -33,40 +34,49 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.AllowAny,)
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Viewset for products
     """
 
     queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    # def get_serializer_class(self):
+    #     if self.action in ("create", "update", "partial_update", "destroy"):
+    #         return ProductRetrieveSerializer
 
-    def get_serializer_class(self):
-        if self.action in ("create", "update", "partial_update", "destroy"):
-            return ProductWriteSerializer
+    #     return ProductSerializer
 
-        return ProductReadSerializer
+    # def get_permissions(self):
 
-    def get_permissions(self):
+    #     if self.action in ("create", "update", "partial_update", "destroy"):
+    #         self.permission_classes = (permissions.IsAdminUser,)
+    #     else:
+    #         self.permission_classes = (permissions.AllowAny,)
 
-        if self.action in ("create", "update", "partial_update", "destroy"):
-            self.permission_classes = (permissions.IsAdminUser,)
-        else:
-            self.permission_classes = (permissions.AllowAny,)
+    #     return super().get_permissions()
 
-        return super().get_permissions()
-
-    def retrieve(self, request, *args, **kwargs):
-        print('asdas')
+    # def retrieve(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     queryset = Product.objects.select_related('category').prefetch_related('images').prefetch_related(
+    #         'videos').filter(id=instance.id)
+    #     serializer = ProductRetrieveSerializer(queryset, many=True)
+    #     return Response(serializer.data)
+    @action(detail=True, methods=['get'])
+    def images(self, request, pk=None):
         instance = self.get_object()
-        serializer = self.get_serializer(instance)
+        serializer = ImageGallerySerializer(instance.get_images(), many=True)
         return Response(serializer.data)
-
+    @action(detail=True, methods=['get'])
+    def videos(self, request, pk=None):
+        instance = self.get_object()
+        serializer = VideoGallerySerializer(instance.get_videos(), many=True)
+        return Response(serializer.data)
     @action(detail=True, methods=['get', 'post'])
     def comments(self, request, pk=None):
         if self.request.method == 'GET':
-            product = self.get_object()
-            comments = Comment.objects.filter(product=product)
-            serializer = CommentSerializer(comments, many=True)
+            instance = self.get_object()
+            serializer = CommentSerializer(instance.get_comments(), many=True)
             return Response(serializer.data)
         elif self.request.method == 'POST':
             serializer = CommentSerializer(data=request.data)
@@ -85,19 +95,19 @@ class CommentViewSet(viewsets.ModelViewSet):
     """
     Viewset for Comment
     """
-    queryset = Comment.objects.all()  # .filter(is_confirmed=True).order_by('-created_at')
-    serializer_class = CommentSerializer
+    queryset = Comment.objects.filter(
+        is_confirmed=True).order_by(
+        '-created_at')  
+    serializer_class = CommentWriteSerializer
+    http_method_names = ['get', 'post']
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'user':self.request.user})
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def get_permissions(self):
-        if self.action in ("update", "partial_update", "destroy"):
-            self.permission_classes = (permissions.IsAdminUser,)
-        elif self.action in ("create"):
-            self.permission_classes = (permissions.IsAuthenticated,)
-        else:
-            self.permission_classes = (permissions.AllowAny,)
-
-        return super().get_permissions()
-
+   
 
 class ImagegalleryViewSet(viewsets.ModelViewSet):
     """
@@ -112,7 +122,7 @@ class ImagegalleryViewSet(viewsets.ModelViewSet):
 
         return super().get_permissions()
 
-    queryset = ImageGallery.objects.all()
+    queryset = ImageGallery.objects.filter(is_active=True)
     serializer_class = ImageGallerySerializer
 
 
@@ -128,5 +138,9 @@ class VideogalleryViewSet(viewsets.ModelViewSet):
             self.permission_classes = (permissions.AllowAny,)
 
         return super().get_permissions()
-    queryset = VideoGallery.objects.all()
+    queryset = VideoGallery.objects.filter(is_active=True)
     serializer_class = VideoGallerySerializer
+
+
+#ueryset = Product.objects.select_related('category').prefetch_related('images').prefetch_related(
+            # 'videos').filter(id=instance.id).filter(product_comments__is_confirmed=True)

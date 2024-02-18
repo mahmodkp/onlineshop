@@ -13,64 +13,6 @@ class ProductCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProductReadSerializer(serializers.ModelSerializer):
-    """
-    Serializer class for reading products
-    """
-
-    category = serializers.CharField(source="category.name", read_only=True)
-
-    class Meta:
-        model = Product
-        fields = "__all__"
-
-
-class ProductWriteSerializer(serializers.ModelSerializer):
-    """
-    Serializer class for writing products
-    """
-
-    category = ProductCategorySerializer()
-
-    class Meta:
-        model = Product
-        fields = (
-            "name",
-            "price",
-            "quantity",
-            "description",
-            "image",
-            "is_active",
-            "category",
-        )
-
-    def create(self, validated_data):
-        category = validated_data.pop("category")
-        instance, created = Category.objects.get_or_create(**category)
-        product = Product.objects.create(**validated_data, category=instance)
-
-        return product
-
-    def update(self, instance, validated_data):
-        if "category" in validated_data:
-            nested_serializer = self.fields["category"]
-            nested_instance = instance.category
-            nested_data = validated_data.pop("category")
-            nested_serializer.update(nested_instance, nested_data)
-
-        return super(ProductWriteSerializer, self).update(instance, validated_data)
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    """
-    Serializer class for comments
-    """
-
-    class Meta:
-        model = Comment
-        fields = ['text', 'created_at']
-
-
 class ImageGallerySerializer(serializers.ModelSerializer):
     """
     Serializer class for image gallery
@@ -89,3 +31,79 @@ class VideoGallerySerializer(serializers.ModelSerializer):
     class Meta:
         model = VideoGallery
         fields = '__all__'  # ['text', 'created_at']
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for comments
+    """
+    user_name = serializers.CharField(source="user", read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['user_name', 'text', 'created_at']
+
+
+class CommentWriteSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for comments
+    """
+    user_name = serializers.CharField(source="user", read_only=True)
+    class Meta:
+        model = Comment
+        fields = ['user_name','product', 'text']
+    def create(self, validated_data): 
+        user = self.context['user']
+        return Comment.objects.create(user=user,**validated_data)    
+class ProductRetrieveSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for writing products
+    """
+
+    category = ProductCategorySerializer()
+    images = ImageGallerySerializer(many=True)
+    videos = VideoGallerySerializer(many=True)
+    # product_comments = CommentSerializer(many=True)
+
+    class Meta:
+        model = Product
+        fields = (
+            "name",
+            "price",
+            "quantity",
+            "description",
+            "icon",
+            "is_active",
+            "category",
+            'images',
+            'videos',
+            # 'product_comments',
+        )
+
+    def create(self, validated_data):
+        category = validated_data.pop("category")
+        instance, created = Category.objects.get_or_create(**category)
+        product = Product.objects.create(**validated_data, category=instance)
+
+        return product
+
+    def update(self, instance, validated_data):
+        if "category" in validated_data:
+            nested_serializer = self.fields["category"]
+            nested_instance = instance.category
+            nested_data = validated_data.pop("category")
+            nested_serializer.update(nested_instance, nested_data)
+
+        return super(ProductRetrieveSerializer, self).update(instance, validated_data)
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for reading products
+    """
+
+    category = serializers.CharField(source="category.name", read_only=True)
+  
+    class Meta:
+        model = Product
+        fields = "__all__"
