@@ -10,11 +10,11 @@ class CustomUser(AbstractUser):
     address = models.CharField(_("adress"), max_length=400)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username',)
-
+    
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
+        return f'{self.first_name} {self.last_name}'
 
 
 # from django.contrib.auth.models import AbstractUser

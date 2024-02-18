@@ -8,11 +8,11 @@ def get_default_product_category():
 
 
 def category_image_path(instance, filename):
-    return f"products/media/category/images/{instance.product.id}/{filename}"
+    return f"products/media/category/images/{instance.id}/{filename}"
 
 
 def product_image_path(instance, filename):
-    return f"products/media/product/images/{instance.product.id}/{filename}"
+    return f"products/media/product/images/{instance.id}/{filename}"
 
 
 def gallery_image_path(instance, filename):
@@ -25,12 +25,13 @@ def gallery_vodeo_path(instance, filename):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(null=True,blank=True)
+    description = models.TextField(null=True, blank=True)
     image = models.ImageField(
         upload_to=category_image_path, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.name
 
@@ -45,33 +46,44 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=2)
     # category = models.ForeignKey(Category, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    description = models.TextField(blank = True,null=True)
-    image = models.ImageField(upload_to=product_image_path, blank=True,null=True)
+    description = models.TextField(blank=True, null=True)
+    icon = models.ImageField(
+        upload_to=product_image_path, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # class Meta:
-    #     ordering = ("-created_at",)
+    def get_comments(self):
+        return Comment.objects.filter(product=self).filter(is_active=True).filter(is_confirmed=True)
+
+    def get_images(self):
+        return ImageGallery.objects.filter(product=self).filter(is_active=True)
+
+    def get_videos(self):
+        return VideoGallery.objects.filter(product=self).filter(is_active=True)
 
     def __str__(self):
         return self.name
 
 
 class ImageGallery(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, related_name="images", on_delete=models.CASCADE)
     image = models.ImageField(upload_to=gallery_image_path, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
 class VideoGallery(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, related_name="videos", on_delete=models.CASCADE)
     video = models.FileField(upload_to=gallery_vodeo_path,
                              null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
 class Comment(models.Model):
     product = models.ForeignKey(
