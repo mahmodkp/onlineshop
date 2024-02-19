@@ -29,7 +29,7 @@ class Card(models.Model):
         return round(sum([order_item.cost for order_item in self.card_items.all()]), 2)
 
     def __str__(self):
-        return f"Customer: {self.buyer.first_name} {self.buyer.last_name} Order: {self.id} | Amount: {self.total_cost} Paid: {self.paid}"
+        return f"Customer: {self.buyer.get_full_name()}, Order: {self.id},  Amount: {self.total_cost}, Paid: {self.paid}"
 
     class Meta:
         verbose_name_plural = "Customer Carts"
