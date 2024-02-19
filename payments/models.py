@@ -7,7 +7,7 @@ from orders.models import Card
 class Payment(models.Model):
     card = models.ForeignKey(
         Card,
-        verbose_name=_("Customer Order"),
+        verbose_name=_("Customer Payment"),
         on_delete=models.CASCADE,
         null=True,
         blank=True,

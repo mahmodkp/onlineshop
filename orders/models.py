@@ -12,7 +12,7 @@ User = get_user_model()
 
 class Card(models.Model):
     buyer = models.ForeignKey(
-        User , on_delete=models.CASCADE, related_name="customers"
+        User, on_delete=models.CASCADE, related_name="customers"
     )
     checkout_id = models.CharField(
         max_length=255, blank=True, null=True, verbose_name="Checkout ID"
@@ -26,13 +26,13 @@ class Card(models.Model):
         """
         Total cost of all the items in an order
         """
-        return round(sum([order_item.cost for order_item in self.order_items.all()]), 2)
+        return round(sum([order_item.cost for order_item in self.card_items.all()]), 2)
 
     def __str__(self):
-        return f"Customer: {self.buyer.first_name} {self.buyer.last_name} Order: {self.id} | Amount: {self.amount} Paid: {self.paid}"
+        return f"Customer: {self.buyer.first_name} {self.buyer.last_name} Order: {self.id} | Amount: {self.total_cost} Paid: {self.paid}"
 
     class Meta:
-        verbose_name_plural = "Customer Cards"
+        verbose_name_plural = "Customer Carts"
         ordering = ("-created_at",)
 
 
@@ -80,7 +80,7 @@ class Invoice(models.Model):
     invoice_number = models.IntegerField(
         verbose_name=_("Invoice Number"), null=True, blank=True, unique=True
     )
-
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

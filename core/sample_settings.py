@@ -17,3 +17,10 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+ADMIN_URL = "admin"
+

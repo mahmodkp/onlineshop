@@ -16,7 +16,8 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
-
+    # def get_full_name(self) -> str:
+    #     return f''
 # from django.contrib.auth.models import AbstractUser
 # from django.db import models
 
