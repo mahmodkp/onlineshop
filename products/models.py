@@ -31,6 +31,8 @@ class Category(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL,
+                               related_name='children', db_index=True)
 
     def __str__(self):
         return self.name
@@ -44,7 +46,6 @@ class Product(models.Model):
     )
     name = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=12, decimal_places=2)
-    # category = models.ForeignKey(Category, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     description = models.TextField(blank=True, null=True)
     icon = models.ImageField(
@@ -52,6 +53,10 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # @property
+    # def price(self):
+    #     return self.prices.filter(is_active=True).last()
 
     def get_comments(self):
         return Comment.objects.filter(product=self).filter(is_active=True).filter(is_confirmed=True)
@@ -65,6 +70,24 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+
+# class Price(models.Model):
+#     product = models.ForeignKey(
+#         Product,
+#         related_name="prices",
+#         on_delete=models.CASCADE,
+#     )
+#     price = models.DecimalField(max_digits=12, decimal_places=2)
+#     is_active = models.BooleanField(default=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+
+#     def __str__(self):
+#         return str(self.price)
+
+#     def __int__(self):
+#         return self.price
+        
 
 class ImageGallery(models.Model):
     product = models.ForeignKey(

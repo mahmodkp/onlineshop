@@ -8,6 +8,7 @@ from products.models import (
     Comment,
     ImageGallery,
     VideoGallery,
+    #Price,
 )
 
 
@@ -51,7 +52,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ["name", "description"]
     ordering = ["name"]
     list_filter = ["is_active"]
-    list_editable = ["is_active", "price", "quantity"]
+    list_editable = ["is_active", "quantity"]
     list_per_page = 30
 
     def is_active(self, instance):
@@ -59,13 +60,14 @@ class ProductAdmin(admin.ModelAdmin):
 
     actions = ["make_active", "make_not_active"]
 
-    @admin.action(description="Mark selected comments as active")
+    @admin.action(description="Mark selected products as active")
     def make_active(self, request, queryset):
         queryset.update(is_active=True)
 
-    @admin.action(description="Mark selected comments as not active")
+    @admin.action(description="Mark selected products as not active")
     def make_not_active(self, request, queryset):
         queryset.update(is_active=False)
+
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -150,3 +152,32 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(ImageGallery, ImageGalleryAdmin)
 admin.site.register(VideoGallery, VideoGalleryAdmin)
+
+
+# class PriceAdmin(admin.ModelAdmin):
+#     list_display = [
+#         "price",
+#         "created_at",
+#         "updated_at",
+#         "is_active"
+#     ]
+#     list_filter = ["is_active"]
+#     list_editable = ["is_active"]
+#     list_per_page = 30
+
+#     def is_active(self, instance):
+#         return instance.is_active()
+
+#     actions = ["make_active", "make_not_active"]
+
+#     @admin.action(description="Mark selected records as active")
+#     def make_active(self, request, queryset):
+#         queryset.update(is_active=True)
+
+#     @admin.action(description="Mark selected records as not active")
+#     def make_not_active(self, request, queryset):
+#         queryset.update(is_active=False)
+
+
+
+# admin.site.register(Price, PriceAdmin)
