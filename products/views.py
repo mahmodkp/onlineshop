@@ -3,6 +3,10 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework import permissions, viewsets
 from rest_framework.response import Response
+from django_filters import rest_framework as filters
+from products.filters import ProductFilter
+from rest_framework.filters import SearchFilter,OrderingFilter
+
 from products.models import (
     Product,
     Category,
@@ -41,6 +45,12 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = (filters.DjangoFilterBackend,
+                       SearchFilter, OrderingFilter)
+    filterset_class = ProductFilter
+    search_fields = ['name', 'description', 'category__name']
+    ordering_fields = ['price']
+
     # def get_serializer_class(self):
     #     if self.action in ("create", "update", "partial_update", "destroy"):
     #         return ProductRetrieveSerializer
@@ -124,7 +134,7 @@ class ImagegalleryViewSet(viewsets.ModelViewSet):
 
     queryset = ImageGallery.objects.filter(is_active=True)
     serializer_class = ImageGallerySerializer
-
+   
 
 class VideogalleryViewSet(viewsets.ModelViewSet):
     """

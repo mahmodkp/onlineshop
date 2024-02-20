@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from products.models import Product, Category, Comment, ImageGallery, VideoGallery
+from blog.models import Article, Category, Comment, ImageGallery, VideoGallery
 
 
-class ProductCategorySerializer(serializers.ModelSerializer):
+class ArticleCategorySerializer(serializers.ModelSerializer):
     """
-    Serializer class for product categories
+    Serializer class for article categories
     """
 
     class Meta:
@@ -37,7 +37,7 @@ class CommentSerializer(serializers.ModelSerializer):
     """
     Serializer class for comments
     """
-    user_name = serializers.CharField(source="user", read_only=True)
+    user_name = serializers.CharField(source="user.get_full_name", read_only=True)
 
     class Meta:
         model = Comment
@@ -53,37 +53,38 @@ class CommentWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['user_name', 'product', 'text']
+        fields = ['user_name', 'article', 'text']
 
     def create(self, validated_data):
         user = self.context['user']
         return Comment.objects.create(user=user, **validated_data)
 
 
-class ProductRetrieveSerializer(serializers.ModelSerializer):
+class ArticleRetrieveSerializer(serializers.ModelSerializer):
     """
-    Serializer class for writing products
+    Serializer class for writing articles
     """
 
-    category = ProductCategorySerializer()
+    category = ArticleCategorySerializer()
     images = ImageGallerySerializer(many=True)
     videos = VideoGallerySerializer(many=True)
     # product_comments = CommentSerializer(many=True)
 
     class Meta:
-        model = Product
-        fields = (
-            "name",
-            "price",
-            "quantity",
-            "description",
-            "icon",
-            "is_active",
-            "category",
-            'images',
-            'videos',
-            # 'product_comments',
-        )
+        model = Article
+        fields ='__all__'
+        # (
+        #     "name",
+        #     "price",
+        #     "quantity",
+        #     "description",
+        #     "icon",
+        #     "is_active",
+        #     "category",
+        #     'images',
+        #     'videos',
+        #     # 'product_comments',
+        # )
 
     def create(self, validated_data):
         category = validated_data.pop("category")
@@ -102,24 +103,24 @@ class ProductRetrieveSerializer(serializers.ModelSerializer):
         return super(ProductRetrieveSerializer, self).update(instance, validated_data)
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     """
     Serializer class for reading products
     """
 
     category = serializers.CharField(source="category.name", read_only=True)
-    # serializers.Field(source="Price.price")
-    price = serializers.DecimalField(max_digits=12,decimal_places=2 ,read_only=True)
+
     class Meta:
-        model = Product
-        fields = [
-            'category',
-            'name',
-            'quantity',
-            'price',
-            'description',
-            'is_active',
-            'created_at',
-            'updated_at',
-            'icon',
-        ]
+        model = Article
+        fields = '__all__'
+        # [
+        #     'category',
+        #     'name',
+        #     'quantity',
+        #     'price',
+        #     'description',
+        #     'is_active',
+        #     'created_at',
+        #     'updated_at',
+        #     'icon',
+        # ]

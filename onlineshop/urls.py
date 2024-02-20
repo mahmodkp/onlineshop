@@ -36,7 +36,6 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    
     path(f'{settings.ADMIN_URL}/', admin.site.urls),
     path('', schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),
@@ -44,12 +43,11 @@ urlpatterns = [
     # re_path(r'^auth/', include('djoser.urls.authtoken')),
     re_path(r'^auth/', include('djoser.urls.jwt')),
     re_path(r'^auth/', include('djoser.social.urls')),
-    
+    # App Routes    
     path("api/v1/products/", include('products.urls')),
+    path("api/v1/blog/", include('blog.urls')),
     path("api/v1/orders/", include('orders.urls')),
     path("api/v1/payments/", include('payments.urls')),
-    # path("api/", include("onlineshop.api_urls")),
-
 
 ]
 
