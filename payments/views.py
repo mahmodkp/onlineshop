@@ -19,10 +19,10 @@ class PaymentViewSet(ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
 
-    def get_queryset(self):
-        res = super().get_queryset()
-        user = self.request.user
-        return res.filter(card__buyer=user)
+    # def get_queryset(self):
+    #     res = super().get_queryset()
+    #     user = self.request.user
+    #     return res.filter(card__buyer=user)
 
     def get_permissions(self):
         if self.action in ("update", "partial_update", "destroy"):

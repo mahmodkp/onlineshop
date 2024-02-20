@@ -1,5 +1,5 @@
 """
-URL configuration for core project.
+URL configuration for onlineshop project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -48,7 +48,7 @@ urlpatterns = [
     path("api/v1/products/", include('products.urls')),
     path("api/v1/orders/", include('orders.urls')),
     path("api/v1/payments/", include('payments.urls')),
-    #path("api/", include("core.api_urls")),
+    # path("api/", include("onlineshop.api_urls")),
 
 
 ]
