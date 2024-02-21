@@ -2,23 +2,20 @@ from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from products.filters import ProductFilter
-from rest_framework.filters import SearchFilter,OrderingFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from products.models import (
     Product,
     Category,
-    ImageGallery,
-    VideoGallery,
     Comment,
 )
 
 from .serializers import (
     CommentWriteSerializer,
     ProductCategorySerializer,
+    ProductMediaFileSerializer,
     ProductSerializer,
     CommentSerializer,
-    ImageGallerySerializer,
-    VideoGallerySerializer,
 )
 from rest_framework.decorators import action
 from rest_framework import status
@@ -49,13 +46,24 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=['get'])
     def images(self, request, pk=None):
         instance = self.get_object()
-        serializer = ImageGallerySerializer(instance.get_images(), many=True)
+        serializer = ProductMediaFileSerializer(
+            instance.get_images(), many=True)
         return Response(serializer.data)
+
     @action(detail=True, methods=['get'])
     def videos(self, request, pk=None):
         instance = self.get_object()
-        serializer = VideoGallerySerializer(instance.get_videos(), many=True)
+        serializer = ProductMediaFileSerializer(
+            instance.get_videos(), many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def audios(self, request, pk=None):
+        instance = self.get_object()
+        serializer = ProductMediaFileSerializer(
+            instance.get_audios(), many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['get', 'post'])
     def comments(self, request, pk=None):
         if self.request.method == 'GET':
@@ -81,30 +89,15 @@ class CommentViewSet(viewsets.ModelViewSet):
     """
     queryset = Comment.objects.filter(
         is_confirmed=True).order_by(
-        '-created_at')  
+        '-created_at')
     serializer_class = CommentWriteSerializer
     http_method_names = ['get', 'post']
+
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, context={'user':self.request.user})
+        serializer = self.get_serializer(data=request.data, context={
+                                         'user': self.request.user})
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-   
-
-class ImagegalleryViewSet(viewsets.ModelViewSet):
-    """
-    Viewset for imagegallery
-    """
-    queryset = ImageGallery.objects.filter(is_active=True)
-    serializer_class = ImageGallerySerializer
-   
-
-class VideogalleryViewSet(viewsets.ModelViewSet):
-    """
-    Viewset for videogallery
-    """
-    queryset = VideoGallery.objects.filter(is_active=True)
-    serializer_class = VideoGallerySerializer
 

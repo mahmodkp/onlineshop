@@ -40,6 +40,13 @@ def gallery_vodeo_path(instance, filename):
     return f"blog/gallery/videos/{instance.id}/{filename}"
 
 
+def media_file_path(instance, filename):
+    """
+    Get file path for media 
+    """
+    return f"blog/media/{instance.article.id}/{filename}"
+
+
 class Category(models.Model):
     """
     Category model for saving cateoris in blog
@@ -91,13 +98,20 @@ class Article(models.Model):
         """
         Get Images of current article
         """
-        return self.images.filter(is_active=True)
+        return self.files.filter(media_type=1, is_active=True)
 
     def get_videos(self):
         """
         Get Videos of current article
         """
-        return self.videos.filter(is_active=True)
+        return self.files.filter(media_type=2, is_active=True)
+    
+    def get_audios(self):
+        """
+        Get Audios of current article
+        """
+        return self.files.filter(media_type=3, is_active=True)
+
 
     class Meta:
         ordering = ("-created_at",)
@@ -106,20 +120,21 @@ class Article(models.Model):
         return self.title
 
 
-class ImageGallery(models.Model):
+class MediaFile(models.Model):
+    FILE_CHOICES = (
+        (1, 'image'),
+        (2, 'video'),
+        (3, 'audio'),
+    )
     article = models.ForeignKey(
-        Article, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='gallery_image_path', null=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
-class VideoGallery(models.Model):
-    article = models.ForeignKey(
-        Article, related_name='videos', on_delete=models.CASCADE)
-    video = models.FileField(upload_to="gallery_vodeo_path",
+        Article,
+        related_name='files',
+        on_delete=models.CASCADE,
+    )
+    media = models.FileField(upload_to=media_file_path,
                              null=True)
+    media_type = models.IntegerField(
+        choices=FILE_CHOICES, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

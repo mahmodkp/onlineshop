@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from blog.models import Article, Category, Comment, ImageGallery, VideoGallery
+from blog.models import Article, Category, Comment, MediaFile
 
 
 class ArticleCategorySerializer(serializers.ModelSerializer):
@@ -13,39 +13,31 @@ class ArticleCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ImageGallerySerializer(serializers.ModelSerializer):
-    """
-    Serializer class for image gallery
-    """
 
-    class Meta:
-        model = ImageGallery
-        fields = '__all__'
-
-
-class VideoGallerySerializer(serializers.ModelSerializer):
-    """
-    Serializer class for video gallery
-    """
-
-    class Meta:
-        model = VideoGallery
-        fields = '__all__'
-
-
-class CommentSerializer(serializers.ModelSerializer):
+class BlogCommentSerializer(serializers.ModelSerializer):
     """
     Serializer class for get comments 
     """
     user_name = serializers.CharField(
         source="user.get_full_name", read_only=True)
+    read_only_fields = ('created_at',)
 
     class Meta:
         model = Comment
         fields = ['user_name', 'text', 'created_at']
 
 
-class CommentWriteSerializer(serializers.ModelSerializer):
+class BlogMediaFileSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for MediaFile model
+    """
+
+    class Meta:
+        model = MediaFile
+        fields = '__all__'
+
+
+class BlogCommentWriteSerializer(serializers.ModelSerializer):
     """
     Serializer class for create and update comments
     """
@@ -71,4 +63,3 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = '__all__'
-        

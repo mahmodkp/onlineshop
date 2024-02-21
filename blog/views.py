@@ -4,22 +4,18 @@ from rest_framework.response import Response
 from blog.filters import ArticleFilter
 from django_filters import rest_framework as filters
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from blog.models import (
     Article,
     Category,
-    ImageGallery,
-    VideoGallery,
     Comment,
 )
 
 from .serializers import (
-    CommentWriteSerializer,
+    BlogCommentWriteSerializer,
     ArticleCategorySerializer,
     ArticleSerializer,
-    CommentSerializer,
-    ImageGallerySerializer,
-    VideoGallerySerializer,
+    BlogCommentSerializer,
+    BlogMediaFileSerializer,
 )
 from rest_framework.decorators import action
 from rest_framework import status
@@ -41,7 +37,7 @@ class ArtcleViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    #permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.DjangoFilterBackend,
                        SearchFilter, OrderingFilter)
     search_fields = ['title', 'text', 'category__name']
@@ -56,23 +52,29 @@ class ArtcleViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=['get'])
     def images(self, request, pk=None):
         instance = self.get_object()
-        serializer = ImageGallerySerializer(instance.get_images(), many=True)
+        serializer = BlogMediaFileSerializer(instance.get_images(), many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
     def videos(self, request, pk=None):
         instance = self.get_object()
-        serializer = VideoGallerySerializer(instance.get_videos(), many=True)
+        serializer = BlogMediaFileSerializer(instance.get_videos(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def audios(self, request, pk=None):
+        instance = self.get_object()
+        serializer = BlogMediaFileSerializer(instance.get_audios(), many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['get', 'post'])
     def comments(self, request, pk=None):
         if self.request.method == 'GET':
             instance = self.get_object()
-            serializer = CommentSerializer(instance.get_comments(), many=True)
+            serializer = BlogCommentSerializer(instance.get_comments(), many=True)
             return Response(serializer.data)
         elif self.request.method == 'POST':
-            serializer = CommentSerializer(data=request.data)
+            serializer = BlogCommentSerializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
                 text = serializer.validated_data.get("text")
                 article = self.get_object()
@@ -91,7 +93,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.filter(
         is_confirmed=True).order_by(
         '-created_at')
-    serializer_class = CommentWriteSerializer
+    serializer_class = BlogCommentWriteSerializer
     http_method_names = ['get', 'post']
 
     def create(self, request, *args, **kwargs):
@@ -101,22 +103,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class ImagegalleryViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Viewset for imagegallery
-    """
-    queryset = ImageGallery.objects.filter(is_active=True)
-    serializer_class = ImageGallerySerializer
-
-    
-class VideogalleryViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Viewset for videogallery
-    """
-    queryset = VideoGallery.objects.filter(is_active=True)
-    serializer_class = VideoGallerySerializer
 
 
 # def get_permissions(self):
