@@ -23,4 +23,3 @@ SIMPLE_JWT = {
 }
 
 ADMIN_URL = "admin"
-

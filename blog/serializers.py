@@ -37,7 +37,8 @@ class CommentSerializer(serializers.ModelSerializer):
     """
     Serializer class for comments
     """
-    user_name = serializers.CharField(source="user.get_full_name", read_only=True)
+    user_name = serializers.CharField(
+        source="user.get_full_name", read_only=True)
 
     class Meta:
         model = Comment
@@ -72,7 +73,7 @@ class ArticleRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields ='__all__'
+        fields = '__all__'
         # (
         #     "name",
         #     "price",
@@ -89,7 +90,7 @@ class ArticleRetrieveSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         category = validated_data.pop("category")
         instance, created = Category.objects.get_or_create(**category)
-        product = Product.objects.create(**validated_data, category=instance)
+        product = Article.objects.create(**validated_data, category=instance)
 
         return product
 
@@ -100,12 +101,13 @@ class ArticleRetrieveSerializer(serializers.ModelSerializer):
             nested_data = validated_data.pop("category")
             nested_serializer.update(nested_instance, nested_data)
 
-        return super(ProductRetrieveSerializer, self).update(instance, validated_data)
+        return super(ArticleRetrieveSerializer, self).update(instance,
+                                                             validated_data)
 
 
 class ArticleSerializer(serializers.ModelSerializer):
     """
-    Serializer class for reading products
+    Serializer class for reading Articles
     """
 
     category = serializers.CharField(source="category.name", read_only=True)

@@ -4,13 +4,17 @@ from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
 
+
 class CustomUserAdmin(UserAdmin):
+    """
+    Class for use as User class for authentication and user specifications
+    """
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
 
     model = CustomUser
-
-    list_display = ('username', 'email','mobile', 'is_active',
+    # Fields to display on admin panel
+    list_display = ('username', 'email', 'mobile', 'is_active',
                     'is_staff', 'is_superuser', 'last_login',)
     list_filter = ('is_active', 'is_staff', 'is_superuser')
     fieldsets = (
@@ -22,10 +26,12 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email','mobile','address', 'password1', 'password2', 'is_staff', 'is_active')}
+            'fields': ('username', 'email', 'mobile', 'address', 'password1',
+                       'password2', 'is_staff', 'is_active')}
          ),
     )
     search_fields = ('email',)
     ordering = ('email',)
+
 
 admin.site.register(CustomUser, CustomUserAdmin)

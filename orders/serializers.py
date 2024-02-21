@@ -1,7 +1,5 @@
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-from rest_framework.exceptions import PermissionDenied
-
 from orders.models import Card, CardItem
 
 
@@ -66,7 +64,7 @@ class CardItemSerializer(serializers.ModelSerializer):
 
 class CardReadSerializer(serializers.ModelSerializer):
     """
-    Serializer class for reading orders
+    Serializer class for reading Cards
     """
 
     buyer = serializers.CharField(source="buyer.get_full_name", read_only=True)
@@ -94,10 +92,7 @@ class CardReadSerializer(serializers.ModelSerializer):
 
 class CardWriteSerializer(serializers.ModelSerializer):
     """
-    Serializer class for creating orders and order items
-
-    Shipping address, billing address and payment are not included here
-    They will be created/updated on checkout
+    Serializer class for creating Cards
     """
 
     # buyer = serializers.HiddenField(default=serializers.CurrentUserDefault())
