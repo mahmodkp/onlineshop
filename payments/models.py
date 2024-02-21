@@ -21,6 +21,6 @@ class Payment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Payment of customer: {self.buyer.first_name} {self.buyer.last_name} for order: {self.card.id}"
+        return f"Payment of customer: {self.buyer.get_full_name()} for order: {self.card.id}"
 
 

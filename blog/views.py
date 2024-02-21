@@ -3,7 +3,8 @@ from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from blog.filters import ArticleFilter
 from django_filters import rest_framework as filters
-from rest_framework.filters import SearchFilter,OrderingFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from blog.models import (
     Article,
     Category,
@@ -16,7 +17,6 @@ from .serializers import (
     CommentWriteSerializer,
     ArticleCategorySerializer,
     ArticleSerializer,
-    ArticleRetrieveSerializer,
     CommentSerializer,
     ImageGallerySerializer,
     VideoGallerySerializer,
@@ -37,18 +37,17 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ArtcleViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Viewset for Articles
+    Get list of all articles and comments and media related to articles
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    #permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.DjangoFilterBackend,
                        SearchFilter, OrderingFilter)
     search_fields = ['title', 'text', 'category__name']
     ordering_fields = ['created_at']
-    filterset_class = ArticleFilter  # ('category',)
-    #filterset_class = ArticleFilter
-    
+    filterset_class = ArticleFilter
+
     def get_queryset(self):
         queryset = self.queryset
         queryset = queryset.filter(is_active=True)
@@ -104,35 +103,25 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class ImagegalleryViewSet(viewsets.ModelViewSet):
+class ImagegalleryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Viewset for imagegallery
     """
-
-    def get_permissions(self):
-        if self.action in ("create", "update", "partial_update", "destroy"):
-            self.permission_classes = (permissions.IsAdminUser,)
-        else:
-            self.permission_classes = (permissions.AllowAny,)
-
-        return super().get_permissions()
-
     queryset = ImageGallery.objects.filter(is_active=True)
     serializer_class = ImageGallerySerializer
 
-
-class VideogalleryViewSet(viewsets.ModelViewSet):
+    
+class VideogalleryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Viewset for videogallery
     """
-
-    def get_permissions(self):
-        if self.action in ("create", "update", "partial_update", "destroy"):
-            self.permission_classes = (permissions.IsAdminUser,)
-        else:
-            self.permission_classes = (permissions.AllowAny,)
-
-        return super().get_permissions()
     queryset = VideoGallery.objects.filter(is_active=True)
     serializer_class = VideoGallerySerializer
 
+
+# def get_permissions(self):
+#         if self.action in ("create", "update", "partial_update", "destroy"):
+#             self.permission_classes = (permissions.IsAdminUser,)
+#         else:
+#             self.permission_classes = (permissions.AllowAny,)
+#         return super().get_permissions()
