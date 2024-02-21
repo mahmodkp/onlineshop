@@ -34,6 +34,13 @@ def gallery_vodeo_path(instance, filename):
     return f"products/media/gallery/videos/{instance.product.id}/{filename}"
 
 
+def media_file_path(instance, filename):
+    """
+    Get file path for media 
+    """
+    return f"product/media/{instance.product.id}/{filename}"
+
+
 class Category(models.Model):
     """
     Category model for saving categoris of products
@@ -85,11 +92,15 @@ class Product(models.Model):
 
     def get_images(self):
         """Getting images of a product instance"""
-        return ImageGallery.objects.filter(product=self).filter(is_active=True)
+        return self.files.filter(media_type=1, is_active=True)
 
     def get_videos(self):
         """Getting videos of a product instance"""
-        return VideoGallery.objects.filter(product=self).filter(is_active=True)
+        return self.files.filter(media_type=2, is_active=True)
+
+    def get_audios(self):
+        """Getting audios of a product instance"""
+        return self.files.filter(media_type=3, is_active=True)
 
     def __str__(self):
         return self.name
@@ -112,27 +123,21 @@ class Product(models.Model):
 #     def __int__(self):
 #         return self.price
 
-
-class ImageGallery(models.Model):
-    """
-    Image model for saving Product's images
-    """
+class MediaFile(models.Model):
+    FILE_CHOICES = (
+        (1, 'image'),
+        (2, 'video'),
+        (3, 'audio'),
+    )
     product = models.ForeignKey(
-        Product, related_name="images", on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=gallery_image_path, null=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
-class VideoGallery(models.Model):
-    """
-    Video model for saving Product's videos
-    """
-    product = models.ForeignKey(
-        Product, related_name="videos", on_delete=models.CASCADE)
-    video = models.FileField(upload_to=gallery_vodeo_path,
+        Product,
+        related_name='files',
+        on_delete=models.CASCADE,
+    )
+    media = models.FileField(upload_to=media_file_path,
                              null=True)
+    media_type = models.IntegerField(
+        choices=FILE_CHOICES, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

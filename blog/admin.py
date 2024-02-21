@@ -6,8 +6,7 @@ from blog.models import (
     Article,
     Category,
     Comment,
-    ImageGallery,
-    VideoGallery,
+    MediaFile,
 )
 
 
@@ -96,11 +95,10 @@ class CommentAdmin(admin.ModelAdmin):
     def make_not_confirmed(self, request, queryset):
         queryset.update(is_confirmed=False)
 
-
-class ImageGalleryAdmin(admin.ModelAdmin):
+class MediaAdmin(admin.ModelAdmin):
     list_display = [
         "article",
-        "image",
+        "media_type",
         "is_active",
     ]
     search_fields = ["article"]
@@ -113,42 +111,15 @@ class ImageGalleryAdmin(admin.ModelAdmin):
 
     actions = ["make_active", "make_not_active"]
 
-    @admin.action(description="Mark selected comments as active")
+    @admin.action(description="Mark selected media as active")
     def make_active(self, request, queryset):
         queryset.update(is_active=True)
 
-    @admin.action(description="Mark selected comments as not active")
+    @admin.action(description="Mark selected media as not active")
     def make_not_active(self, request, queryset):
         queryset.update(is_active=False)
-
-
-class VideoGalleryAdmin(admin.ModelAdmin):
-    list_display = [
-        "article",
-        "video",
-        "is_active",
-    ]
-    search_fields = ["article"]
-    list_filter = ["is_active"]
-    list_editable = ["is_active"]
-    list_per_page = 30
-
-    def is_active(self, instance):
-        return instance.is_active()
-
-    actions = ["make_active", "make_not_active"]
-
-    @admin.action(description="Mark selected comments as active")
-    def make_active(self, request, queryset):
-        queryset.update(is_active=True)
-
-    @admin.action(description="Mark selected comments as not active")
-    def make_not_active(self, request, queryset):
-        queryset.update(is_active=False)
-
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(Comment, CommentAdmin)
-admin.site.register(ImageGallery, ImageGalleryAdmin)
-admin.site.register(VideoGallery, VideoGalleryAdmin)
+admin.site.register(MediaFile, MediaAdmin)

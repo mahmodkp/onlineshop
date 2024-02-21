@@ -1,11 +1,10 @@
 from rest_framework import serializers
 
 from products.models import (
+    MediaFile,
     Product,
     Category,
     Comment,
-    ImageGallery,
-    VideoGallery,
 )
 
 
@@ -19,24 +18,15 @@ class ProductCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ImageGallerySerializer(serializers.ModelSerializer):
+class ProductMediaFileSerializer(serializers.ModelSerializer):
     """
-    Serializer class for image gallery
-    """
-
-    class Meta:
-        model = ImageGallery
-        fields = '__all__'  # ['text', 'created_at']
-
-
-class VideoGallerySerializer(serializers.ModelSerializer):
-    """
-    Serializer class for video gallery
+    Serializer class for MediaFile model
     """
 
     class Meta:
-        model = VideoGallery
-        fields = '__all__'  # ['text', 'created_at']
+        model = MediaFile
+        fields = '__all__'
+
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -45,6 +35,7 @@ class CommentSerializer(serializers.ModelSerializer):
     """
     user_name = serializers.CharField(source="user", read_only=True)
     read_only_fields = ('created_at',)
+
     class Meta:
         model = Comment
         fields = ['user_name', 'text', 'created_at']
