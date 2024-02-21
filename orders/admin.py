@@ -6,6 +6,9 @@ from orders.models import Card, CardItem, Invoice
 
 
 class CardAdmin(admin.ModelAdmin):
+    """
+    Admin panel for Card Model
+    """
     list_display = [
         "buyer",
         "checkout_id",
@@ -22,6 +25,9 @@ class CardAdmin(admin.ModelAdmin):
 
 
 class CardItemAdmin(admin.ModelAdmin):
+    """
+    Admin panel for Card items Model
+    """
     list_display = [
         "card",
         "product",
@@ -49,14 +55,3 @@ class InvoiceAdmin(admin.ModelAdmin):
 admin.site.register(Card, CardAdmin)
 admin.site.register(CardItem, CardItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
-
-
-# from django.contrib import admin
-
-# # Register your models here.
-# from orders.models import Card, CardItem, Invoice
-
-# admin.site.register(Card)
-# admin.site.register(CardItem)
-# admin.site.register(Invoice)
-

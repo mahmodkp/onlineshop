@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.functional import cached_property
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from products.models import Product
 
@@ -11,6 +10,9 @@ User = get_user_model()
 
 
 class Card(models.Model):
+    """
+    The shoping cards models
+    """
     buyer = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="customers"
     )
@@ -26,10 +28,12 @@ class Card(models.Model):
         """
         Total cost of all the items in an order
         """
-        return round(sum([order_item.cost for order_item in self.card_items.all()]), 2)
+        return round(
+            sum([order_item.cost for order_item in self.card_items.all()]), 2)
 
     def __str__(self):
-        return f"Customer: {self.buyer.get_full_name()}, Order: {self.id},  Amount: {self.total_cost}, Paid: {self.paid}"
+        return f"Customer: {self.buyer.get_full_name()}, Order: {self.id},\
+                Amount: {self.total_cost}, Paid: {self.paid}"
 
     class Meta:
         verbose_name_plural = "Customer Carts"
@@ -37,6 +41,10 @@ class Card(models.Model):
 
 
 class CardItem(models.Model):
+    """
+    The shoping cards items models to save the items of prodduct in
+    eacch shoping cart
+    """
     card = models.ForeignKey(
         Card, related_name="card_items", on_delete=models.CASCADE
     )
@@ -62,6 +70,9 @@ class CardItem(models.Model):
 
 
 class Invoice(models.Model):
+    """
+    The Invoce sodel to save the invoices of success paymments
+    """
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -80,7 +91,7 @@ class Invoice(models.Model):
     invoice_number = models.IntegerField(
         verbose_name=_("Invoice Number"), null=True, blank=True, unique=True
     )
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

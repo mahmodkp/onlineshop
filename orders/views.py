@@ -1,12 +1,9 @@
-from django.shortcuts import render
-
 # Create your views here.
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
-from .models import Card, CardItem
+from .models import Card
 # from orders.permissions import (
 #     IsOrderByBuyerOrAdmin,
 #     IsOrderItemByBuyerOrAdmin,
@@ -14,7 +11,6 @@ from .models import Card, CardItem
 #     IsOrderPending,
 # )
 from .serializers import (
-    CardItemSerializer,
     CardReadSerializer,
     CardWriteSerializer,
 )
@@ -54,7 +50,7 @@ class CardViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def checkout(self, request, pk=None):
-        order = self.get_object()
+        #order = self.get_object()
         pass
 
     def list(self, request, *args, **kwargs):
@@ -69,7 +65,8 @@ class CardViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)

@@ -16,14 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
-from rest_framework_swagger.views import get_swagger_view
-
 from django.conf.urls.static import static
-from rest_framework_swagger.views import get_swagger_view
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
-from django.conf import settings
 from django.conf import settings
 
 schema_view = get_schema_view(
@@ -43,7 +39,7 @@ urlpatterns = [
     # re_path(r'^auth/', include('djoser.urls.authtoken')),
     re_path(r'^auth/', include('djoser.urls.jwt')),
     re_path(r'^auth/', include('djoser.social.urls')),
-    # App Routes    
+    # App Routes
     path("api/v1/products/", include('products.urls')),
     path("api/v1/blog/", include('blog.urls')),
     path("api/v1/orders/", include('orders.urls')),

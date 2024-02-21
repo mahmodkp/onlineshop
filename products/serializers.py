@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from products.models import Product, Category, Comment, ImageGallery, VideoGallery
+from products.models import (
+    Product,
+    Category,
+    Comment,
+    ImageGallery,
+    VideoGallery,
+)
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
@@ -99,7 +105,8 @@ class ProductRetrieveSerializer(serializers.ModelSerializer):
             nested_data = validated_data.pop("category")
             nested_serializer.update(nested_instance, nested_data)
 
-        return super(ProductRetrieveSerializer, self).update(instance, validated_data)
+        return super(ProductRetrieveSerializer, self).update(instance,
+                                                             validated_data)
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -109,7 +116,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
     category = serializers.CharField(source="category.name", read_only=True)
     # serializers.Field(source="Price.price")
-    price = serializers.DecimalField(max_digits=12,decimal_places=2 ,read_only=True)
+    price = serializers.DecimalField(
+        max_digits=12, decimal_places=2, read_only=True)
+
     class Meta:
         model = Product
         fields = [

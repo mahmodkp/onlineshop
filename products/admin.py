@@ -8,12 +8,14 @@ from products.models import (
     Comment,
     ImageGallery,
     VideoGallery,
-    #Price,
 )
 
 
 # Category admin page
 class CategoryAdmin(admin.ModelAdmin):
+    """
+    Admin panel for Category Model
+    """
     list_display = [
         "name",
         "description",
@@ -42,6 +44,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
+    """
+    Admin panel for Product Model
+    """
     list_display = [
         "name",
         "price",
@@ -69,8 +74,10 @@ class ProductAdmin(admin.ModelAdmin):
         queryset.update(is_active=False)
 
 
-
 class CommentAdmin(admin.ModelAdmin):
+    """
+    Admin panel for Comment Model
+    """
     list_display = [
         "user",
         "product",
@@ -86,8 +93,9 @@ class CommentAdmin(admin.ModelAdmin):
 
     def is_active(self, instance):
         return instance.is_active()
-    
+
     actions = ["make_confirmed", "make_not_confirmed"]
+
     @admin.action(description="Mark selected comments as confirmed")
     def make_confirmed(self, request, queryset):
         queryset.update(is_confirmed=True)
@@ -98,6 +106,9 @@ class CommentAdmin(admin.ModelAdmin):
 
 
 class ImageGalleryAdmin(admin.ModelAdmin):
+    """
+    Admin panel for Imagegallery Model
+    """
     list_display = [
         "product",
         "image",
@@ -121,7 +132,11 @@ class ImageGalleryAdmin(admin.ModelAdmin):
     def make_not_active(self, request, queryset):
         queryset.update(is_active=False)
 
+
 class VideoGalleryAdmin(admin.ModelAdmin):
+    """
+    Admin panel for Videogallery Model
+    """
     list_display = [
         "product",
         "video",
@@ -139,13 +154,12 @@ class VideoGalleryAdmin(admin.ModelAdmin):
 
     @admin.action(description="Mark selected comments as active")
     def make_active(self, request, queryset):
-        queryset.update(is_active
-        =True)
+        queryset.update(is_active=True)
 
     @admin.action(description="Mark selected comments as not active")
     def make_not_active(self, request, queryset):
-        queryset.update(is_active
-        =False)
+        queryset.update(is_active=False)
+
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
@@ -177,7 +191,6 @@ admin.site.register(VideoGallery, VideoGalleryAdmin)
 #     @admin.action(description="Mark selected records as not active")
 #     def make_not_active(self, request, queryset):
 #         queryset.update(is_active=False)
-
 
 
 # admin.site.register(Price, PriceAdmin)

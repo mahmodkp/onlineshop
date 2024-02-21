@@ -8,22 +8,37 @@ def get_default_product_category():
 
 
 def category_image_path(instance, filename):
+    """
+    Set deleted cateory to unknown for an product
+    """
     return f"products/media/category/images/{instance.id}/{filename}"
 
 
 def product_image_path(instance, filename):
+    """
+    Get Image path for category
+    """
     return f"products/media/product/images/{instance.id}/{filename}"
 
 
 def gallery_image_path(instance, filename):
+    """
+    Get Image path for the products 's icon
+    """
     return f"products/media/gallery/images/{instance.product.id}/{filename}"
 
 
 def gallery_vodeo_path(instance, filename):
+    """
+    Get Image path for the products
+    """
     return f"products/media/gallery/videos/{instance.product.id}/{filename}"
 
 
 class Category(models.Model):
+    """
+    Category model for saving categoris of products
+    """
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     image = models.ImageField(
@@ -31,14 +46,20 @@ class Category(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL,
-                               related_name='children', db_index=True)
+    parent = models.ForeignKey('self', null=True,
+                               blank=True,
+                               on_delete=models.SET_NULL,
+                               related_name='children',
+                               db_index=True)
 
     def __str__(self):
         return self.name
 
 
 class Product(models.Model):
+    """
+    Product model for saving Products
+    """
     category = models.ForeignKey(
         Category,
         related_name="products",
@@ -59,12 +80,16 @@ class Product(models.Model):
     #     return self.prices.filter(is_active=True).last()
 
     def get_comments(self):
-        return Comment.objects.filter(product=self).filter(is_active=True).filter(is_confirmed=True)
+        """Getting comments of a product instance"""
+        return Comment.objects.filter(product=self).filter(
+            is_active=True).filter(is_confirmed=True)
 
     def get_images(self):
+        """Getting images of a product instance"""
         return ImageGallery.objects.filter(product=self).filter(is_active=True)
 
     def get_videos(self):
+        """Getting videos of a product instance"""
         return VideoGallery.objects.filter(product=self).filter(is_active=True)
 
     def __str__(self):
@@ -87,9 +112,12 @@ class Product(models.Model):
 
 #     def __int__(self):
 #         return self.price
-        
+
 
 class ImageGallery(models.Model):
+    """
+    Image model for saving Product's images
+    """
     product = models.ForeignKey(
         Product, related_name="images", on_delete=models.CASCADE)
     image = models.ImageField(upload_to=gallery_image_path, null=True)
@@ -99,6 +127,9 @@ class ImageGallery(models.Model):
 
 
 class VideoGallery(models.Model):
+    """
+    Video model for saving Product's videos
+    """
     product = models.ForeignKey(
         Product, related_name="videos", on_delete=models.CASCADE)
     video = models.FileField(upload_to=gallery_vodeo_path,
@@ -109,6 +140,9 @@ class VideoGallery(models.Model):
 
 
 class Comment(models.Model):
+    """
+    Comment model for saving Product's comments
+    """
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='product_comments')
     user = models.ForeignKey(
