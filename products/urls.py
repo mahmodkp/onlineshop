@@ -9,10 +9,10 @@ from products.views import (
     VideogalleryViewSet,
 )
 
-app_name = "product"
+app_name = "products"
 
 router = DefaultRouter()
-router.register(r"all", ProductViewSet)
+router.register(r"product", ProductViewSet)
 router.register(r"categories", CategoryViewSet)
 router.register(r"comments", CommentViewSet)
 router.register(r"imagegallery", ImagegalleryViewSet)

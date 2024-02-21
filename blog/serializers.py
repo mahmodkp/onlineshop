@@ -20,7 +20,7 @@ class ImageGallerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ImageGallery
-        fields = '__all__'  # ['text', 'created_at']
+        fields = '__all__'
 
 
 class VideoGallerySerializer(serializers.ModelSerializer):
@@ -30,12 +30,12 @@ class VideoGallerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VideoGallery
-        fields = '__all__'  # ['text', 'created_at']
+        fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):
     """
-    Serializer class for comments
+    Serializer class for get comments 
     """
     user_name = serializers.CharField(
         source="user.get_full_name", read_only=True)
@@ -47,7 +47,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CommentWriteSerializer(serializers.ModelSerializer):
     """
-    Serializer class for comments
+    Serializer class for create and update comments
     """
     user_name = serializers.CharField(
         source="user.get_full_name", read_only=True)
@@ -61,50 +61,6 @@ class CommentWriteSerializer(serializers.ModelSerializer):
         return Comment.objects.create(user=user, **validated_data)
 
 
-class ArticleRetrieveSerializer(serializers.ModelSerializer):
-    """
-    Serializer class for writing articles
-    """
-
-    category = ArticleCategorySerializer()
-    images = ImageGallerySerializer(many=True)
-    videos = VideoGallerySerializer(many=True)
-    # product_comments = CommentSerializer(many=True)
-
-    class Meta:
-        model = Article
-        fields = '__all__'
-        # (
-        #     "name",
-        #     "price",
-        #     "quantity",
-        #     "description",
-        #     "icon",
-        #     "is_active",
-        #     "category",
-        #     'images',
-        #     'videos',
-        #     # 'product_comments',
-        # )
-
-    def create(self, validated_data):
-        category = validated_data.pop("category")
-        instance, created = Category.objects.get_or_create(**category)
-        product = Article.objects.create(**validated_data, category=instance)
-
-        return product
-
-    def update(self, instance, validated_data):
-        if "category" in validated_data:
-            nested_serializer = self.fields["category"]
-            nested_instance = instance.category
-            nested_data = validated_data.pop("category")
-            nested_serializer.update(nested_instance, nested_data)
-
-        return super(ArticleRetrieveSerializer, self).update(instance,
-                                                             validated_data)
-
-
 class ArticleSerializer(serializers.ModelSerializer):
     """
     Serializer class for reading Articles
@@ -115,14 +71,4 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = '__all__'
-        # [
-        #     'category',
-        #     'name',
-        #     'quantity',
-        #     'price',
-        #     'description',
-        #     'is_active',
-        #     'created_at',
-        #     'updated_at',
-        #     'icon',
-        # ]
+        

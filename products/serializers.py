@@ -44,7 +44,7 @@ class CommentSerializer(serializers.ModelSerializer):
     Serializer class for comments
     """
     user_name = serializers.CharField(source="user", read_only=True)
-
+    read_only_fields = ('created_at',)
     class Meta:
         model = Comment
         fields = ['user_name', 'text', 'created_at']
@@ -66,49 +66,6 @@ class CommentWriteSerializer(serializers.ModelSerializer):
         return Comment.objects.create(user=user, **validated_data)
 
 
-class ProductRetrieveSerializer(serializers.ModelSerializer):
-    """
-    Serializer class for writing products
-    """
-
-    category = ProductCategorySerializer()
-    images = ImageGallerySerializer(many=True)
-    videos = VideoGallerySerializer(many=True)
-    # product_comments = CommentSerializer(many=True)
-
-    class Meta:
-        model = Product
-        fields = (
-            "name",
-            "price",
-            "quantity",
-            "description",
-            "icon",
-            "is_active",
-            "category",
-            'images',
-            'videos',
-            # 'product_comments',
-        )
-
-    def create(self, validated_data):
-        category = validated_data.pop("category")
-        instance, created = Category.objects.get_or_create(**category)
-        product = Product.objects.create(**validated_data, category=instance)
-
-        return product
-
-    def update(self, instance, validated_data):
-        if "category" in validated_data:
-            nested_serializer = self.fields["category"]
-            nested_instance = instance.category
-            nested_data = validated_data.pop("category")
-            nested_serializer.update(nested_instance, nested_data)
-
-        return super(ProductRetrieveSerializer, self).update(instance,
-                                                             validated_data)
-
-
 class ProductSerializer(serializers.ModelSerializer):
     """
     Serializer class for reading products
@@ -122,6 +79,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
+            'id',
             'category',
             'name',
             'quantity',

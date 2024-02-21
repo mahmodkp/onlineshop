@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
@@ -19,7 +16,6 @@ from .serializers import (
     CommentWriteSerializer,
     ProductCategorySerializer,
     ProductSerializer,
-    ProductRetrieveSerializer,
     CommentSerializer,
     ImageGallerySerializer,
     VideoGallerySerializer,
@@ -42,7 +38,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Viewset for products
     """
-
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = (filters.DjangoFilterBackend,
@@ -51,27 +46,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['name', 'description', 'category__name']
     ordering_fields = ['price']
 
-    # def get_serializer_class(self):
-    #     if self.action in ("create", "update", "partial_update", "destroy"):
-    #         return ProductRetrieveSerializer
-
-    #     return ProductSerializer
-
-    # def get_permissions(self):
-
-    #     if self.action in ("create", "update", "partial_update", "destroy"):
-    #         self.permission_classes = (permissions.IsAdminUser,)
-    #     else:
-    #         self.permission_classes = (permissions.AllowAny,)
-
-    #     return super().get_permissions()
-
-    # def retrieve(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     queryset = Product.objects.select_related('category').prefetch_related('images').prefetch_related(
-    #         'videos').filter(id=instance.id)
-    #     serializer = ProductRetrieveSerializer(queryset, many=True)
-    #     return Response(serializer.data)
     @action(detail=True, methods=['get'])
     def images(self, request, pk=None):
         instance = self.get_object()
@@ -94,10 +68,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
                 text = serializer.validated_data.get("text")
                 product = self.get_object()
                 user = self.request.user
-                comments = Comment.objects.create(
+                Comment.objects.create(
                     user=user, product=product, text=text)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -123,15 +97,6 @@ class ImagegalleryViewSet(viewsets.ModelViewSet):
     """
     Viewset for imagegallery
     """
-
-    def get_permissions(self):
-        if self.action in ("create", "update", "partial_update", "destroy"):
-            self.permission_classes = (permissions.IsAdminUser,)
-        else:
-            self.permission_classes = (permissions.AllowAny,)
-
-        return super().get_permissions()
-
     queryset = ImageGallery.objects.filter(is_active=True)
     serializer_class = ImageGallerySerializer
    
@@ -140,17 +105,6 @@ class VideogalleryViewSet(viewsets.ModelViewSet):
     """
     Viewset for videogallery
     """
-
-    def get_permissions(self):
-        if self.action in ("create", "update", "partial_update", "destroy"):
-            self.permission_classes = (permissions.IsAdminUser,)
-        else:
-            self.permission_classes = (permissions.AllowAny,)
-
-        return super().get_permissions()
     queryset = VideoGallery.objects.filter(is_active=True)
     serializer_class = VideoGallerySerializer
 
-
-#ueryset = Product.objects.select_related('category').prefetch_related('images').prefetch_related(
-            # 'videos').filter(id=instance.id).filter(product_comments__is_confirmed=True)

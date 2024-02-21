@@ -1,44 +1,13 @@
 # Create your views here.
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.decorators import action
 from .models import Card
-# from orders.permissions import (
-#     IsOrderByBuyerOrAdmin,
-#     IsOrderItemByBuyerOrAdmin,
-#     IsOrderItemPending,
-#     IsOrderPending,
-# )
 from .serializers import (
     CardReadSerializer,
     CardWriteSerializer,
 )
-
-
-# class CardItemViewSet(viewsets.ModelViewSet):
-#     """
-#     CRUD order items that are associated with the current order id.
-#     """
-
-#     queryset = CardItem.objects.all()
-#     serializer_class = CardItemSerializer
-#    # permission_classes = [IsOrderItemByBuyerOrAdmin]
-
-#     def get_queryset(self):
-#         res = super().get_queryset()
-#         order_id = self.kwargs.get("order_id")
-#         return res.filter(order__id=order_id)
-
-#     def perform_create(self, serializer):
-#         order = get_object_or_404(Order, id=self.kwargs.get("order_id"))
-#         serializer.save(order=order)
-
-#     def get_permissions(self):
-#         if self.action in ("create", "update", "partial_update", "destroy"):
-#             self.permission_classes += [IsOrderItemPending]
-
-#         return super().get_permissions()
 
 
 class CardViewSet(viewsets.ModelViewSet):
@@ -46,12 +15,23 @@ class CardViewSet(viewsets.ModelViewSet):
     CRUD orders of a Cart
     """
     queryset = Card.objects.all()
-    # permission_classes = [IsOrderByBuyerOrAdmin]
+    permission_classes = (permissions.IsAuthenticated,)
 
     @action(detail=True, methods=["get"])
     def checkout(self, request, pk=None):
-        #order = self.get_object()
-        pass
+        """
+        Order Checkout for payment
+        """
+        card = Card.objects.filter(id=pk).first()
+        if not card:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        if card.buyer != self.request.user:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        for item in card.card_items:
+            if item.quantity > card.product.quantity:
+                return Response({'Checkout error': 'Product quantity in shopping cart is graeter than product quantity'}, status=status.HTTP_400_BAD_REQUEST)
+        # TODO: Create a checkout id and send checkout id and amount to gateway
+        return Response(status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -94,8 +74,27 @@ class CardViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return res.filter(buyer=user)
 
-    # def get_permissions(self):
-    #     if self.action in ("update", "partial_update", "destroy"):
-    #         self.permission_classes += [IsOrderPending]
 
-    #     return super().get_permissions()
+# class CardItemViewSet(viewsets.ModelViewSet):
+#     """
+#     CRUD order items that are associated with the current order id.
+#     """
+
+#     queryset = CardItem.objects.all()
+#     serializer_class = CardItemSerializer
+#    # permission_classes = [IsOrderItemByBuyerOrAdmin]
+
+#     def get_queryset(self):
+#         res = super().get_queryset()
+#         order_id = self.kwargs.get("order_id")
+#         return res.filter(order__id=order_id)
+
+#     def perform_create(self, serializer):
+#         order = get_object_or_404(Order, id=self.kwargs.get("order_id"))
+#         serializer.save(order=order)
+
+#     def get_permissions(self):
+#         if self.action in ("create", "update", "partial_update", "destroy"):
+#             self.permission_classes += [IsOrderItemPending]
+
+#         return super().get_permissions()

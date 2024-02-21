@@ -6,7 +6,6 @@ from products.models import Product
 
 User = get_user_model()
 
-# Create your models here.
 
 
 class Card(models.Model):
@@ -42,7 +41,7 @@ class Card(models.Model):
 
 class CardItem(models.Model):
     """
-    The shoping cards items models to save the items of prodduct in
+    The shoping cards items models to save the items of product in
     eacch shoping cart
     """
     card = models.ForeignKey(
@@ -71,7 +70,7 @@ class CardItem(models.Model):
 
 class Invoice(models.Model):
     """
-    The Invoce sodel to save the invoices of success paymments
+    The Invoce model to save the invoices of success paymments
     """
     user = models.ForeignKey(
         User,

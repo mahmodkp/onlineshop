@@ -1,6 +1,5 @@
 from django.db import models
 from accounts.models import CustomUser
-# Create your models here.
 
 
 def get_default_product_category():

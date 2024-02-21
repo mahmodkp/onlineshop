@@ -1,40 +1,40 @@
-from django.conf import settings
-from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet,ReadOnlyModelViewSet
-from rest_framework.filters import SearchFilter, OrderingFilter
-from django_filters import rest_framework as filters
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet,mixins
+from orders.models import Card
 from payments.models import Payment
 from .serializers import  PaymentSerializer
-from rest_framework import permissions
-from .services import send_email,send_invoice_email
-from rest_framework import generics, mixins, views
-from rest_framework.decorators import action
-class PaymentViewSet(ModelViewSet):
+import datetime
+
+class PaymentViewSet(mixins.ListModelMixin,
+                     GenericViewSet):
     """
-    CRUD payment for an Payment
+    CRUD payment call Back
     """
+    http_method_names = ['get']
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-    # get payment status
-    @action(detail=True, methods=["get"])
-    def payment(self, request, pk=None):
-        pass
 
-    # def get_queryset(self):
-    #     res = super().get_queryset()
-    #     user = self.request.user
-    #     return res.filter(card__buyer=user)
+    def list(self, request, *args, **kwargs):
+        """
+        The callback function for payment gateway.
+        """
+        transaction_id = '12'
+        timestamp = datetime.datetime.now
+        card = Card.objects.filter(checkout_id=transaction_id).first()
+        data = {
+            "card": card.id,
+            "transaction_id": transaction_id,
+            #"timestamp":timestamp,
+            "comment":'ok',
+            "approved": True,
+        }
+        serializer = PaymentSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
 
-    def get_permissions(self):
-        if self.action in ("update", "partial_update", "destroy"):
-            permission_classes = (permissions.IsAuthenticated,)
-
-        return super().get_permissions()
-
+    
 
 class ReportViewSet(ReadOnlyModelViewSet):
    

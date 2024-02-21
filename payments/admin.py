@@ -14,7 +14,7 @@ class PaymentAdmin(admin.ModelAdmin):
         "card",
         "transaction_id",
         "approved",
-        "timestamp",
+        "created_at",
     ]
 
     list_filter = ["approved"]
