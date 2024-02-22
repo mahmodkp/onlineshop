@@ -105,13 +105,12 @@ class Article(models.Model):
         Get Videos of current article
         """
         return self.files.filter(media_type=2, is_active=True)
-    
+
     def get_audios(self):
         """
         Get Audios of current article
         """
         return self.files.filter(media_type=3, is_active=True)
-
 
     class Meta:
         ordering = ("-created_at",)

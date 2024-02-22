@@ -3,12 +3,6 @@ from rest_framework import serializers
 from orders.models import Card, CardItem
 
 
-class CardItemSerializer2(serializers.ModelSerializer):
-    class Meta:
-        model = CardItem
-        fields = '__all__'
-
-
 class CardItemSerializer(serializers.ModelSerializer):
     """
     Serializer class for serializing order items
@@ -92,7 +86,7 @@ class CardReadSerializer(serializers.ModelSerializer):
 
 class CardWriteSerializer(serializers.ModelSerializer):
     """
-    Serializer class for creating Cards
+    Serializer class for creating and updating Cards
     """
 
     # buyer = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -131,25 +125,6 @@ class CardWriteSerializer(serializers.ModelSerializer):
         return last_card
 
     def update(self, instance, validated_data):
-        # # orders_data = validated_data.pop("order_items")
-        # user = self.context['user']
-        # last_card = Card.objects.filter(
-        #     buyer=user).filter(paid=False).first()
-        # # if last_card is None:
-        # #     last_card = Card.objects.create(buyer=user)
-        # card_products = CardItem.objects.filter(
-        #     card=last_card).values_list('product', flat=True)
-        # for item in validated_data.pop("card_items"):    # validated_data['']
-        #     product = item["product"]
-        #     if product.id in card_products:
-        #         card_item = CardItem.objects.filter(
-        #             card=last_card).filter(product=product).first()
-        #         card_item.quantity = item["quantity"]
-        #         if card_item.quantity == 0:
-        #             card_item.delete()
-        #         else:
-        #             card_item.save()
-        # return last_card
         items_data = validated_data.pop("card_items", None)
         items = list((instance.card_items).all())
 
@@ -161,6 +136,12 @@ class CardWriteSerializer(serializers.ModelSerializer):
                 cartitem.save()
 
         return instance
+
+
+class CardReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Card
+        fields = '__all__'
 
 
 # {

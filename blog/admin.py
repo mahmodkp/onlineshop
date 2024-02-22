@@ -95,6 +95,7 @@ class CommentAdmin(admin.ModelAdmin):
     def make_not_confirmed(self, request, queryset):
         queryset.update(is_confirmed=False)
 
+
 class MediaAdmin(admin.ModelAdmin):
     list_display = [
         "article",
@@ -118,6 +119,7 @@ class MediaAdmin(admin.ModelAdmin):
     @admin.action(description="Mark selected media as not active")
     def make_not_active(self, request, queryset):
         queryset.update(is_active=False)
+
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Article, ArticleAdmin)

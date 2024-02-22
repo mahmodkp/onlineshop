@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from blog.filters import ArticleFilter
@@ -71,7 +70,9 @@ class ArtcleViewSet(viewsets.ReadOnlyModelViewSet):
     def comments(self, request, pk=None):
         if self.request.method == 'GET':
             instance = self.get_object()
-            serializer = BlogCommentSerializer(instance.get_comments(), many=True)
+            serializer = BlogCommentSerializer(
+                instance.get_comments(),
+                many=True)
             return Response(serializer.data)
         elif self.request.method == 'POST':
             serializer = BlogCommentSerializer(data=request.data)
@@ -79,7 +80,7 @@ class ArtcleViewSet(viewsets.ReadOnlyModelViewSet):
                 text = serializer.validated_data.get("text")
                 article = self.get_object()
                 user = self.request.user
-                comments = Comment.objects.create(
+                Comment.objects.create(
                     user=user, article=article, text=text)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -102,7 +103,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
 
 # def get_permissions(self):

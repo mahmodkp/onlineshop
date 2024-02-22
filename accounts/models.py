@@ -6,7 +6,8 @@ from .managers import CustomUserManager
 
 class CustomUser(AbstractUser):
     """
-    New model for user. authentication and saving attributes of user i in this moedel.
+    New model for user. authentication and saving attributes
+    of user i in this moedel.
     """
     email = models.EmailField(_('email address'), unique=True)
     mobile = models.CharField(_("mobile number"), max_length=50)
