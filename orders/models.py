@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.functional import cached_property
@@ -5,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 from products.models import Product
 
 User = get_user_model()
-
 
 
 class Card(models.Model):
@@ -50,7 +50,7 @@ class CardItem(models.Model):
     product = models.ForeignKey(
         Product, related_name="product_cards", on_delete=models.CASCADE
     )
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -63,7 +63,7 @@ class CardItem(models.Model):
     @cached_property
     def cost(self):
         """
-        Total cost of the ordered item
+        Cost calculation for each cart item
         """
         return round(self.quantity * self.product.price, 2)
 
@@ -96,3 +96,13 @@ class Invoice(models.Model):
 
     def __str__(self):
         return self.invoice_number
+
+    def save(self, *args, **kwargs):
+        invoices = Invoice.objects.all()
+
+        if invoices.exists() and self._state.adding:
+            last_invice = invoices.latest()
+            self.invoice_number = int(last_invice.order) + 1
+        else:
+            self.invoice_number = 1000
+        super().save(*args, **kwargs)

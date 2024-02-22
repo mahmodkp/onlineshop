@@ -1,5 +1,4 @@
 from django.db import models
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from orders.models import Card
 
@@ -21,6 +20,7 @@ class Payment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Payment of customer: {self.buyer.get_full_name()} for order: {self.card.id}"
+        return f"Payment of customer: \
+            {self.buyer.get_full_name()} for order: {self.card.id}"
 
 

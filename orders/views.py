@@ -29,7 +29,11 @@ class CardViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         for item in card.card_items:
             if item.quantity > card.product.quantity:
-                return Response({'Checkout error': 'Product quantity in shopping cart is graeter than product quantity'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({
+                    'Checkout error': 'Product quantity in shopping cart \
+                        is graeter than product quantity'
+                },
+                    status=status.HTTP_400_BAD_REQUEST)
         # TODO: Create a checkout id and send checkout id and amount to gateway
         return Response(status=status.HTTP_200_OK)
 
@@ -75,26 +79,10 @@ class CardViewSet(viewsets.ModelViewSet):
         return res.filter(buyer=user)
 
 
-# class CardItemViewSet(viewsets.ModelViewSet):
-#     """
-#     CRUD order items that are associated with the current order id.
-#     """
+class CardReportViewSet(viewsets.ReadOnlyModelViewSet):
 
-#     queryset = CardItem.objects.all()
-#     serializer_class = CardItemSerializer
-#    # permission_classes = [IsOrderItemByBuyerOrAdmin]
-
-#     def get_queryset(self):
-#         res = super().get_queryset()
-#         order_id = self.kwargs.get("order_id")
-#         return res.filter(order__id=order_id)
-
-#     def perform_create(self, serializer):
-#         order = get_object_or_404(Order, id=self.kwargs.get("order_id"))
-#         serializer.save(order=order)
-
-#     def get_permissions(self):
-#         if self.action in ("create", "update", "partial_update", "destroy"):
-#             self.permission_classes += [IsOrderItemPending]
-
-#         return super().get_permissions()
+    queryset = Card.objects.all()
+    serializer_class = CardReadSerializer
+    permission_classes = (
+        permissions.IsAdminUser,
+    )

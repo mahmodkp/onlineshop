@@ -13,7 +13,6 @@ class ArticleCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-
 class BlogCommentSerializer(serializers.ModelSerializer):
     """
     Serializer class for get comments 

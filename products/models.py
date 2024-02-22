@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from accounts.models import CustomUser
 
@@ -36,7 +37,7 @@ def gallery_vodeo_path(instance, filename):
 
 def media_file_path(instance, filename):
     """
-    Get file path for media 
+    Get file path for media
     """
     return f"product/media/{instance.product.id}/{filename}"
 
@@ -73,7 +74,8 @@ class Product(models.Model):
     )
     name = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=12, decimal_places=2)
-    quantity = models.IntegerField(default=1)
+    quantity = models.IntegerField(
+        default=1, validators=[MinValueValidator(0)])
     description = models.TextField(blank=True, null=True)
     icon = models.ImageField(
         upload_to=product_image_path, blank=True, null=True)

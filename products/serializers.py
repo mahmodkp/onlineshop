@@ -28,7 +28,6 @@ class ProductMediaFileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class CommentSerializer(serializers.ModelSerializer):
     """
     Serializer class for comments

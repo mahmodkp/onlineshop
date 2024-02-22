@@ -1,3 +1,4 @@
+from datetime import timedelta
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ''
 
@@ -18,8 +19,13 @@ DATABASES = {
     }
 }
 
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
+REST_AUTH = {
+    'USE_JWT': True,
 }
 
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=5),
+}
 ADMIN_URL = "admin"
