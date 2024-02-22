@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from .local_settings import *
 
@@ -37,6 +38,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'djoser',
+    'ckeditor',  # CKEditor config
+    'ckeditor_uploader',  # CKEditor media uploader
     # Apps
     'accounts',
     'products',
@@ -144,5 +147,10 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ckeditor upload path
+CKEDITOR_UPLOAD_PATH = "uploads/"
 
 APPEND_SLASH = True

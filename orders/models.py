@@ -95,7 +95,7 @@ class Invoice(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.invoice_number
+        return str(self.invoice_number)
 
     def save(self, *args, **kwargs):
         invoices = Invoice.objects.all()

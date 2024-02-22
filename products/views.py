@@ -84,6 +84,12 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
                     status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    def get_permissions(self):
+        if self.action in ("update", "partial_update", "destroy"):
+            self.permission_classes += [permissions.IsAuthenticated]
+
+        return super().get_permissions()
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     """

@@ -10,8 +10,15 @@ from blog.models import (
 )
 
 
-# Category admin page
+class ArticleInline(admin.StackedInline):
+    model = Article
+    extra = 1
+
+
 class CategoryAdmin(admin.ModelAdmin):
+    """
+    Category admin page
+    """
     list_display = [
         "name",
         "description",
@@ -37,7 +44,9 @@ class CategoryAdmin(admin.ModelAdmin):
     @admin.action(description="Mark selected comments as not active")
     def make_not_active(self, request, queryset):
         queryset.update(is_active=False)
-
+    inlines = (
+        ArticleInline,
+    )
 # Product admin page
 
 

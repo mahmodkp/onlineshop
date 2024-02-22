@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from accounts.models import CustomUser
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 def get_default_product_category():
@@ -76,7 +77,8 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=2)
     quantity = models.IntegerField(
         default=1, validators=[MinValueValidator(0)])
-    description = models.TextField(blank=True, null=True)
+    # description = models.TextField(blank=True, null=True)
+    description = RichTextUploadingField(blank=True, null=True)
     icon = models.ImageField(
         upload_to=product_image_path, blank=True, null=True)
     is_active = models.BooleanField(default=True)
