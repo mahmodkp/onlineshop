@@ -10,7 +10,13 @@ from products.models import (
 )
 
 
+class ProductInline(admin.StackedInline):
+    model = Product
+    extra = 1
+
 # Category admin page
+
+
 class CategoryAdmin(admin.ModelAdmin):
     """
     Admin panel for Category Model
@@ -39,6 +45,9 @@ class CategoryAdmin(admin.ModelAdmin):
     def make_not_active(self, request, queryset):
         queryset.update(is_active=False)
 
+    inlines = (
+        ProductInline,
+    )
 # Product admin page
 
 

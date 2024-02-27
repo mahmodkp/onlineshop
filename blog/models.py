@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
+from ckeditor_uploader.fields import RichTextUploadingField
 # Getting the user Model
 User = get_user_model()
 
@@ -81,7 +81,8 @@ class Article(models.Model):
         on_delete=models.SET(get_default_article_category),
     )
     title = models.CharField(max_length=200)
-    text = models.TextField(blank=True, null=True)
+    # text = models.TextField(blank=True, null=True)
+    text = RichTextUploadingField(blank=True, null=True)
     icon = models.ImageField(
         upload_to=article_image_path, blank=True, null=True)
     is_active = models.BooleanField(default=True)

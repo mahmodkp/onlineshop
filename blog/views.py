@@ -36,7 +36,7 @@ class ArtcleViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.DjangoFilterBackend,
                        SearchFilter, OrderingFilter)
     search_fields = ['title', 'text', 'category__name']
